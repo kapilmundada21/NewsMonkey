@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import News from './News'
 import Spinner from './Spinner'
 import InfiniteScroll from "react-infinite-scroll-component";
 
-export default class NewsItems extends Component {
-  
+export default function NewsItems(props) {
+
     // articles = [
     //     {
     //         "source": {
@@ -268,92 +268,67 @@ export default class NewsItems extends Component {
     //     }
     // ];
 
-    capitalizeFirstLetter(string) {
+    const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    static defaultProps = {
-        country : "in",
-        category : "general",
-        pageSize : "20"
-    }
-    articles = [];
-    constructor(props){
-        super(props);
-        this.state = {
-            articles: this.articles,
-            loading : true,
-            page : 1,
-            totalResults : 0
-        }
-        document.title = `${this.capitalizeFirstLetter(this.props.category)} - NewsMonkey`;
-    }
+    // articles = []; 
+    const [articles, setArticles] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [page, setPage] = useState(1)
+    const [totalResults, setTotalResults] = useState(0)
 
-    updateData = async ()=>{
-        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pagesize=${this.props.pageSize}`;
+    const updateData = async () => {
+        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pagesize=${props.pageSize}`;
         let data = await fetch(url);
         let parsedData = await data.json();
-        this.setState({
-            articles : parsedData.articles,
-            totalResults : parsedData.totalResults,
-            loading : false
-        });
+        setArticles(parsedData.articles);
+        setTotalResults(parsedData.totalResults);
+        setLoading(false);
     }
 
-    async componentDidMount(){
-        this.updateData()
-    };
+    useEffect(() => {
+        updateData()
+        document.title = `${capitalizeFirstLetter(props.category)} - NewsMonkey`;
+        //eslint-disable-next-line
+    }, [])
 
-    prevPage = async ()=> {
-        this.state.page = this.state.page - 1;
-        this.updateData()
-    };
-    nextPage = async ()=> {
-        this.state.page = this.state.page + 1;
-        this.updateData()
-    };
-
-    fetchMoreData = async () => {
-        this.state.page = this.state.page + 1;
-        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pagesize=${this.props.pageSize}`;
+    const fetchMoreData = async () => {
+        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page + 1}&pagesize=${props.pageSize}`;
+        setPage(page + 1);
         let data = await fetch(url);
         let parsedData = await data.json();
-        this.setState({
-            articles : this.state.articles.concat(parsedData.articles),
-            totalResults : parsedData.totalResults,
-            loading : false
-        });
+        setArticles(articles.concat(parsedData.articles));
+        setTotalResults(parsedData.totalResults);
+        setLoading(false);
     };
-    
-    render() {
-        
-        return (
-            <>
-                
-            <h2 className='text-center my-3'>NewsMonkey - Top {this.capitalizeFirstLetter(this.props.category)} Headlines</h2>
-            {this.state.loading && <Spinner/>}
-            <InfiniteScroll
-                dataLength={this.state.articles.length}
-                next={this.fetchMoreData}
-                hasMore={this.state.articles.length !== this.state.totalResults}
-                loader={<Spinner />}
-                >
+
+    return (
+        <>
+        <h2 className='text-center my-3'>NewsMonkey - Top {capitalizeFirstLetter(props.category)} Headlines</h2>
+        {loading && <Spinner />}
+        <InfiniteScroll
+            dataLength={articles.length}
+            next={fetchMoreData}
+            hasMore={articles.length !== totalResults}
+            loader={<Spinner />}
+        >
             <div className='container my-3'>
                 <div className='row'>
-                    {this.state.articles.map((element)=>{
+                    {articles.map((element) => {
                         return <div className='col my-3' key={element.url}>
-                            <News title={element.title?element.title:""} discription={element.description?element.description:""} imgURL={element.urlToImage?element.urlToImage:"https://www.deccanherald.com/sites/dh/files/articleimages/2022/07/15/malware-pixabay-1126891-1657877311.jpg"} newsURL={element.url} />
+                            <News title={element.title ? element.title : ""} discription={element.description ? element.description : ""} imgURL={element.urlToImage ? element.urlToImage : "https://www.deccanherald.com/sites/dh/files/articleimages/2022/07/15/malware-pixabay-1126891-1657877311.jpg"} newsURL={element.url} />
                         </div>
                     })}
                 </div>
             </div>
-            </InfiniteScroll>
+        </InfiniteScroll>
+        </>
+    )
+}
 
-            {/* <div className='d-flex justify-content-between'>
-                <button disabled={this.state.page <= 1} onClick={this.prevPage} type="button" className="btn btn-primary my-3">Previous</button>
-                <button disabled={this.state.page + 1 > Math.ceil(this.state.totalResults/this.props.pageSize)} onClick={this.nextPage} type="button" className='btn btn-primary my-3'>Next</button>
-            </div> */}
-            </>
-        )
-    }
+NewsItems.defaultProps = {
+    country: "in",
+    category: "general",
+    pageSize: "20"
 }
