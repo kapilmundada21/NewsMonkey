@@ -279,12 +279,16 @@ export default function NewsItems(props) {
     const [totalResults, setTotalResults] = useState(0)
 
     const updateData = async () => {
+        props.setProgress(10);
         let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pagesize=${props.pageSize}`;
         let data = await fetch(url);
+        props.setProgress(30);
         let parsedData = await data.json();
+        props.setProgress(70);
         setArticles(parsedData.articles);
         setTotalResults(parsedData.totalResults);
         setLoading(false);
+        props.setProgress(100);
     }
 
     useEffect(() => {
