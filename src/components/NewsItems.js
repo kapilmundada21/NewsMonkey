@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import News from './News'
 import Spinner from './Spinner'
 import InfiniteScroll from "react-infinite-scroll-component";
+import NoteContext from '../context/NoteContext';
 
 export default function NewsItems(props) {
 
@@ -307,8 +308,11 @@ export default function NewsItems(props) {
         setLoading(false);
     };
 
+    const a = useContext(NoteContext);
+
     return (
         <>
+        {console.log(a.name + " " + a.surname)}
         <h2 className='text-center my-3'>NewsMonkey - Top {capitalizeFirstLetter(props.category)} Headlines</h2>
         {loading && <Spinner />}
         <InfiniteScroll
