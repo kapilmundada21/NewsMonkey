@@ -4,12 +4,17 @@ import NewsItems from './components/NewsItems';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoadingBar from 'react-top-loading-bar'
 import NoteState from './context/NoteState';
+// import NewsRedux from './reduxComponents/NewsRedux';
+// import HooksNews from './reduxComponents/hooksNews';
+import { Provider } from 'react-redux'
+import { newsStore } from './redux/news/newsStore';
 
 export default function App() {
   const apiKey = process.env.REACT_APP_API_KEY;
   const [progress, setProgress] = useState(0)
   return (
     <div>
+      <Provider store={newsStore}>
       <NoteState>
         <BrowserRouter>
           <NavBar />
@@ -27,9 +32,12 @@ export default function App() {
             <Route exact path="/science" element={<NewsItems setProgress={setProgress} apiKey={apiKey} key="science" category="science" pageSize="8" country="in" />}></Route>
             <Route exact path="/sports" element={<NewsItems setProgress={setProgress} apiKey={apiKey} key="sports" category="sports" pageSize="8" country="in" />}></Route>
             <Route exact path="/technology" element={<NewsItems setProgress={setProgress} apiKey={apiKey} key="technology" category="technology" pageSize="8" country="in" />}></Route>
+            {/* <Route exact path="/redux" element={<NewsRedux />}></Route> */}
+            {/* <Route exact path="/redux" element={<HooksNews />}></Route> */}
           </Routes>
         </BrowserRouter>
       </NoteState>
+      </Provider>
     </div>
   )
 }

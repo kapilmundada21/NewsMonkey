@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Link,useLocation } from "react-router-dom";
 
 
@@ -22,6 +22,7 @@ export default function NavBar() {
                             <li className="nav-item"><Link className={`nav-link ${location.pathname==="/science"?"active":""}`} to="/science">Science</Link></li>
                             <li className="nav-item"><Link className={`nav-link ${location.pathname==="/sports"?"active":""}`} to="/sports">Sports</Link></li>
                             <li className="nav-item"><Link className={`nav-link ${location.pathname==="/technology"?"active":""}`} to="/technology">Technology</Link></li>
+                            <li className="nav-item"><Link className={`nav-link ${location.pathname==="/redux"?"active":""}`} to="/redux">Redux</Link></li>
                         </ul>
                         <form className="d-flex" role="search">
                             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
